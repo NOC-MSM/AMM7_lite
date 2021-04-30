@@ -179,10 +179,6 @@ export XIOS_DIR=$XIOS_DIR/xios
 
 cd $WORK_DIR/nemo
 cp $REPO_DIR/arch/nemo/* ./arch
-# Dirty fix to hard wire path otherwise user will have to set XIOS_DIR in every new shell session
-sed "s?XXX_XIOS_DIR_XXX?$XIOS_DIR?" ./arch/arch-${HPC_TARG}_${COMPILER}.fcm > tmp_arch
-mv tmp_arch ./arch/arch-${HPC_TARG}_${COMPILER}.fcm
-echo arch-${HPC_TARG}_${COMPILER}.fcm
 
 echo 'AMM7 OCE' >> $WORK_DIR/nemo/cfgs/work_cfgs.txt
 
