@@ -167,12 +167,18 @@ esac
 cd xios
 cp $REPO_DIR/arch/xios/* ./arch
 echo "Compiling xios"
-./make_xios --full --prod --arch ${HPC_TARG}_${COMPILER} --netcdf_lib netcdf4_par
+./make_xios --full --prod --arch ${HPC_TARG}_${COMPILER} --netcdf_lib netcdf4_par -j 4
 # Dirty fix here as xios has to unpack before we can edit
-sed -e "s/FC_MODSEARCH => '',  /FC_MODSEARCH => '-J',/" tools/FCM/lib/Fcm/Config.pm > tmp_file
-mv tmp_file tools/FCM/lib/Fcm/Config.pm
-# Try once more
-./make_xios --full --prod --arch ${HPC_TARG}_${COMPILER} --netcdf_lib netcdf4_par
+case "${HPC_TARG}"
+  in
+  archer2) sed -e "s/FC_MODSEARCH => '',  /FC_MODSEARCH => '-J',/" tools/FCM/lib/Fcm/Config.pm > tmp_file
+           mv tmp_file tools/FCM/lib/Fcm/Config.pm
+           # Try once more
+           ./make_xios --full --prod --arch ${HPC_TARG}_${COMPILER} --netcdf_lib netcdf4_par -j 4
+           ;;
+  singularity) echo "don't need to try a second time"
+           ;;
+esac 
 
 # Let's update the path to xios
 export XIOS_DIR=$XIOS_DIR/xios
@@ -189,14 +195,19 @@ export CONFIG_DIR=$WORK_DIR/nemo/cfgs/AMM7
 cp -r $REPO_DIR/MY_SRC/${NEMO_VER} $CONFIG_DIR/MY_SRC
 cp $REPO_DIR/cpp_AMM7.fcm $CONFIG_DIR/
 
-cd $WORK_DIR/nemo/ext/FCM/lib/Fcm
-sed -e "s/FC_MODSEARCH => '',  /FC_MODSEARCH => '-J',/" Config.pm > tmp_file
-mv tmp_file Config.pm
+case "${HPC_TARG}"
+  in
+  archer2) cd $WORK_DIR/nemo/ext/FCM/lib/Fcm
+           sed -e "s/FC_MODSEARCH => '',  /FC_MODSEARCH => '-J',/" Config.pm > tmp_file
+           mv tmp_file Config.pm
+           ;;
+  singularity) echo "no adjustment"
+esac
 
 cd $WORK_DIR/nemo
 
 echo "Compiling nemo AMM7 Config"
-./makenemo -m ${HPC_TARG}_${COMPILER} -r AMM7
+./makenemo -m ${HPC_TARG}_${COMPILER} -r AMM7 -j 4
 
 cd cfgs/AMM7/EXP00
 
