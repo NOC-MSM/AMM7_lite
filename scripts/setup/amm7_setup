@@ -192,7 +192,7 @@ echo 'AMM7 OCE' >> $WORK_DIR/nemo/cfgs/work_cfgs.txt
 
 export CONFIG_DIR=$WORK_DIR/nemo/cfgs/AMM7
 
-cp -r $REPO_DIR/MY_SRC/${NEMO_VER} $CONFIG_DIR/MY_SRC
+#cp -r $REPO_DIR/MY_SRC/${NEMO_VER} $CONFIG_DIR/MY_SRC
 cp $REPO_DIR/cpp_AMM7.fcm $CONFIG_DIR/
 
 case "${HPC_TARG}"
